@@ -1,6 +1,7 @@
 import MyAxios from '@/plugins/MyAxios'
+import {API} from "@/model/Type";
 
-export const fetchUserData = async (page: number, pageSize: number) => {
+export const fetchUserData = async (page: number, pageSize: number): Promise<API.PageResponse<API.User>> => {
     try {
         const response = await MyAxios.get('/hot/user/all', {
             params: {
@@ -11,11 +12,11 @@ export const fetchUserData = async (page: number, pageSize: number) => {
         return response?.data;
     } catch (error) {
         console.error("Type list get failed: ", error);
-        throw error; // 可以选择是否要继续抛出错误，视使用场景而定
+        return {} as API.PageResponse<API.User>;
     }
 };
 
-export const fetchApartmentData = async (page: number, pageSize: number) => {
+export const fetchApartmentData = async (page: number, pageSize: number):Promise<API.PageResponse<API.Apartment>> => {
     try {
         const response = await MyAxios.get('/hot/apartment/all', {
             params: {
@@ -26,6 +27,6 @@ export const fetchApartmentData = async (page: number, pageSize: number) => {
         return response?.data;
     } catch (error) {
         console.error("Type list get failed: ", error);
-        throw error; // 可以选择是否要继续抛出错误，视使用场景而定
+        return {} as API.PageResponse<API.Apartment>;
     }
 };

@@ -1,142 +1,87 @@
 <template>
-  <h2>用户列表</h2>
-
-  <el-table :data="filterTableData" style="width: 100%" :border="true" :fit="true" >
-    <el-table-column label="uid" prop="uid"  align="center"/>
-    <el-table-column label="头像" prop="avatar"  align="center" >
-      <template #default="{ row }">
-        <img :src="row.avatar" alt="" class="avatar-img"/>
-      </template>
-    </el-table-column>
-    <el-table-column label="用户名" prop="username" align="center" />
-    <el-table-column label="账户" prop="userAccount"  align="center" />
-    <el-table-column label="性别" prop="gender"  align="center"/>
-    <el-table-column label="手机号" prop="phone"  align="center"/>
-    <el-table-column label="邮箱" prop="email"  align="center"/>
-    <el-table-column label="角色" prop="userRole"  align="center"/>
-
-    <el-table-column label="更新时间" prop="updateTime"  align="center">
-      <template #default="{ row }">
-        {{ formatDate(row.updateTime) }}
-      </template>
-    </el-table-column>
-    <el-table-column label="创建时间" prop="createTime"  align="center">
-      <template #default="{ row }">
-        {{ formatDate(row.createTime) }}
-      </template>
-    </el-table-column>
-    <el-table-column label="备注" prop="remark"  align="center"/>
-    <el-table-column label="操作"  align="center">
-      <template #default="scope">
-        <el-button size="small" @click="handleEdit(scope.$index, scope.row)">
-          编辑
-        </el-button>
-        <el-button
-            size="small"
-            type="danger"
-            @click="handleDelete(scope.$index, scope.row)"
-        >
-          删除
-        </el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-  <div class="pagination-container">
-    <el-pagination
-        background
-        layout="prev, pager, next"
-        :page-size="pageSize"
-        @prev-click="onPreOnclick"
-        @next-click="onNextOnclick"
-        @current-change="onPageChange"
-        :total="userList.total">
-    </el-pagination>
+  <div id="title">
+    <h2>用户列表</h2>
+    <el-button type="primary" @click="addUser">添加用户</el-button>
   </div>
-
+  <TableLayout
+      :pageSize="pageSize"
+      :filterTableData="filterTableData"
+      :next-onclick="onNextOnclick"
+      :pre-onclick="onPreOnclick"
+      :handle-delete="handleDelete"
+      :handle-edit="handleEdit"
+      :formatDate="formatDate"
+      :on-page-change="onPageChange"
+  />
 </template>
 
 <script lang="ts" setup>
 import {computed, onMounted, ref} from 'vue'
 import {fetchUserData} from "@/service/api";
 import {API} from "@/model/Type"
+import TableLayout from "@/layouts/UserTableLayout.vue";
+import {mock} from "@/mock/mock";
+import {formatDate} from "@/utils/DateUtils";
 
+const users: API.PageResponse<API.User> = mock;
+
+let pageSize = 3;
 const search = ref('')
-let pageSize = 3
 const currentPage = ref(1)
-const userList = ref({
-  data: [],
-  page: 1,
-  total: 0,
-});
+const userList = ref({} as API.PageResponse<API.User>);
+
 const loadUserData = async () => {
-  const userData = await fetchUserData(currentPage.value, pageSize);
+  // const userData = await fetchUserData(currentPage.value, pageSize);
+  const userData = users;
   if (userData) {
-    userList.value.data = userData.records;
-    userList.value.page = userData.page;
-    userList.value.total = userData.total;
+    userList.value = userData;
   }
 };
-onMounted(async () => {
-  await loadUserData()
+onMounted(() => {
+  loadUserData()
 })
 
-const onPreOnclick = async (page) => {
+const onPreOnclick = async (page: number) => {
   currentPage.value--;
   await loadUserData()
   console.log("pre: ", page)
 }
-const onNextOnclick = async (page) => {
+const onNextOnclick = async (page: number) => {
   currentPage.value++;
   await loadUserData()
   console.log("next: ", page)
 }
-const filterTableData = computed(() =>
-    userList.value.data.filter(
-        (data) =>
+
+const filterTableData = computed(() => {
+  if (userList.value && userList.value.records) {
+    return userList.value.records.filter(
+        (record) =>
             !search.value ||
-            data.username.toLowerCase().includes(search.value.toLowerCase())
-    )
-)
+            record.username.toLowerCase().includes(search.value.toLowerCase())
+    );
+  } else {
+    return [];
+  }
+});
 const handleEdit = (index: number, row: API.User) => {
   console.log(index, row)
 }
 const handleDelete = (index: number, row: API.User) => {
   console.log(index, row)
 }
-
-const onPageChange = async (page:number)=>{
+const onPageChange = async (page: number) => {
   currentPage.value = page;
+  console.log(page)
   await loadUserData()
 }
 
-const formatDate = (date: Date | string) => {
-  // 如果传入的是字符串，将其转换为 Date 对象
-  if (typeof date === 'string') {
-    date = new Date(date);
-  }
+const addUser = () => {
 
-  // 检查 date 是否为有效的 Date 对象
-  if (isNaN(date.getTime())) {
-    throw new Error('Invalid date');
-  }
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
+}
 </script>
 
 <style scoped>
-.avatar-img {
-  width: 80px; /* 图片宽度 */
-  height: 80px; /* 图片高度 */
-  object-fit: cover; /* 保持图片比例并填充 */
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
+#title {
+  margin-bottom: 10px;
 }
 </style>

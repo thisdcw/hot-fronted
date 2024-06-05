@@ -2,11 +2,11 @@
  * 用户类别
  */
 
-export declare namespace API{
+export declare namespace API {
     type User = {
         uid: number;
         avatar: string;
-        username?: string;
+        username: string;
         userAccount: string;
         gender?: number;
         phone?: string;
@@ -16,14 +16,20 @@ export declare namespace API{
         updateTime: Date;
         createTime: Date;
     };
-    type Apartment={
-        aid:number;
-        uid?:number;
-        apartmentName:string;
-        address:string;
-        type:number;
-        apartmentStatus:number;
+    type Apartment = {
+        aid: number;
+        uid?: number;
+        apartmentName: string;
+        address: string;
+        type: number;
+        apartmentStatus: number;
         updateTime: Date;
         createTime: Date;
+    }
+    type PageResponse<T> = {
+        page: number;
+        pageSize: number;
+        total: number;
+        records: T[];
     }
 }
