@@ -1,6 +1,6 @@
-import {Type} from "@/model/Type";
+import {API} from "@/model/Type";
 
-export const mockUser: Type[] = [
+export const mockUser: API.User[] = [
     {
         uid: 1,
         avatar: 'https://fuss10.elemecdn.com/a/3f/3302e58f9a181d2509f3dc0fa68b0jpeg.jpeg',

@@ -1,13 +1,10 @@
 <template>
   <div>
-    111111111111
+    欢迎来到酒店管理系统
   </div>
 </template>
 
 <script>
-export default {
-  name: 'WelcomePage',
-};
 </script>
 
 <style scoped>
